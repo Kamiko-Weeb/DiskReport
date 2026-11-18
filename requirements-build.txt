@@ -1,0 +1,10 @@
+# Build tools only (packaging/build_app.sh, packaging/build_dmg.py). The app itself needs requirements.txt.
+altgraph==0.17.5
+dmgbuild==2.0.0
+ds_store==1.3.4
+mac_alias==2.2.4
+macholib==1.16.4
+packaging==26.3
+pyinstaller-hooks-contrib==2026.10
+pyinstaller==6.22.3
+setuptools==84.2.1

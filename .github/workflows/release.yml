@@ -1,0 +1,52 @@
+# Build the macOS .dmg and attach it to a GitHub Release, only when a version tag is pushed
+# (e.g. `git tag v0.1.0 && git push origin v0.1.0`). Ordinary pushes do not run this.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # to create the release and upload the .dmg
+
+jobs:
+  build-dmg:
+    runs-on: macos-14   # Apple silicon
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-build.txt
+
+      - name: Check the tag matches the version in the code
+        run: |
+          VERSION="$(python -c 'import diskreport; print(diskreport.__version__)')"
+          if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match diskreport.__version__ ($VERSION)"
+            exit 1
+          fi
+
+      - name: Smoke-test the CLI (read-only, prints the help)
+        run: python -m diskreport.cli --help
+
+      - name: Build DiskReport.app
+        env:
+          PYTHON: python
+        run: packaging/build_app.sh
+
+      - name: Build the .dmg
+        run: python packaging/build_dmg.py
+
+      - name: Create the GitHub Release with the .dmg attached
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/DiskReport-*.dmg \
+            --title "DiskReport $GITHUB_REF_NAME" \
+            --notes "Download the .dmg below, drag DiskReport into Applications, then right-click it and choose Open the first time (the app is not signed with an Apple Developer ID). See the README for details."

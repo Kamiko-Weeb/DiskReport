@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Build output: never commit apps or disk images (GitHub's 100 MB limit, and large files
+# stay in git history forever). Releases carry the .dmg instead.
+build/
+dist/
+*.spec
+*.dmg
+*.app/
+build-log.txt
+
+# macOS
+.DS_Store
+
+# DiskReport test data: snapshots and reports belong in ~/.diskreport, never in the repo
+.diskreport/
+snapshots/
+latest-report.txt
