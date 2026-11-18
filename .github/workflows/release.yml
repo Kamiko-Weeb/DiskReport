@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-dmg:
-    runs-on: macos-14   # Apple silicon
+    runs-on: macos-latest   # Apple silicon; a pinned image (e.g. macos-14) gets retired
     steps:
       - uses: actions/checkout@v4
 
